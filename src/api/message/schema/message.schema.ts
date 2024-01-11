@@ -13,7 +13,6 @@ export class Message {
   participants: User[];
   @Prop()
   messages: Conversation[];
-
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User' })
   sentby: User;
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User' })

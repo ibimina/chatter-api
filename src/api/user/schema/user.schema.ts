@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { HydratedDocument } from 'mongoose';
+import { Account } from 'src/api/account/schema/account.schema';
 import { Article } from 'src/api/article/schema/article.schema';
 import { Bookmark } from 'src/api/bookmark/schema/bookmark.schema';
 import { Follower } from 'src/api/follower/schema/follower.schema';
@@ -44,6 +45,9 @@ export class User {
   githubUrl: string;
   @Prop()
   instagramUrl: string;
+  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User' })
+  account: Account;
+
   @Prop()
   linkedinUrl: string;
   @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Topic' }] })
