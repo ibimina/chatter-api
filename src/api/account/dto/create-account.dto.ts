@@ -12,8 +12,9 @@ export class CreateAccountDto {
   @ApiProperty()
   @IsString()
   password?: string;
+
   @ApiProperty()
-  @IsString()
   @IsOptional()
+  @IsString()
   photoUrl: string;
 }

@@ -30,7 +30,7 @@ export class User {
   @Prop()
   location: string;
   @Prop()
-  photoURL: string;
+  photoUrl: string;
   @Prop()
   profileTagline: string;
   @Prop()
