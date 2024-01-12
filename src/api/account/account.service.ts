@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateAccountDto } from './dto/create-account.dto';
 import { hashPassword } from 'src/shared/utils';
 import { InjectModel } from '@nestjs/mongoose';
@@ -17,11 +17,15 @@ export class AccountService {
   ) {}
   async createAccount(createAccountDto: CreateAccountDto) {
     try {
-      //add transaction
       const session = await this.connection.startSession();
-
       await session.withTransaction(async () => {
         const { username, email, password, photoUrl } = createAccountDto;
+        const oldAccount = await this.accountModel.findOne({ email });
+        if (oldAccount) {
+          throw new BadRequestException(
+            `An account with this email already exists, kindly change your email`,
+          );
+        }
         const passwordEn = hashPassword(password);
         const account = new this.accountModel({
           username,
@@ -32,6 +36,8 @@ export class AccountService {
         return account.save();
       });
       session.endSession();
-    } catch (error) {}
+    } catch (error) {
+      throw new BadRequestException(error?.meta?.cause);
+    }
   }
 }
