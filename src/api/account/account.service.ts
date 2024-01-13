@@ -15,8 +15,9 @@ export class AccountService {
     private readonly userService: UserService,
     @InjectConnection() private readonly connection: mongoose.Connection,
   ) {}
-  async createAccount(createAccountDto: CreateAccountDto) {
+  async createAccount(createAccountDto: CreateAccountDto): Promise<Account> {
     try {
+      let account;
       const session = await this.connection.startSession();
       await session.withTransaction(async () => {
         const { username, email, password, photoUrl } = createAccountDto;
@@ -27,17 +28,19 @@ export class AccountService {
           );
         }
         const passwordEn = hashPassword(password);
-        const account = new this.accountModel({
+        account = new this.accountModel({
           username,
           email,
           password: passwordEn,
         });
+        account.save();
         await this.userService.createUser({ username, photoUrl }, session);
-        return account.save();
+        account.password = undefined;
       });
       session.endSession();
+      return account;
     } catch (error) {
-      throw new BadRequestException(error?.meta?.cause);
+      throw new BadRequestException(error);
     }
   }
 }
